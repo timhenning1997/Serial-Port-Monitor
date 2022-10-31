@@ -7,6 +7,7 @@ class ToolsMenu(QMenu):
     addTerminalSignal = pyqtSignal(str)
     addGraphSignal = pyqtSignal(str)
     addPressureControlPanelSignal = pyqtSignal(str)
+    addDruckBox2Signal = pyqtSignal(str)
     addMotorDriverPanelSignal = pyqtSignal(str)
     addTablePlotterSignal = pyqtSignal(str)
     addVarCalculatorSignal = pyqtSignal(str)
@@ -27,6 +28,10 @@ class ToolsMenu(QMenu):
         pressureControlMenu = AvailablePorts(connectedPorts, "&PressureControlPanel", parent)
         pressureControlMenu.actionTriggeredSignal.connect(self.addPressureControlPanel)
         self.addMenu(pressureControlMenu)
+        
+        druckBox2Menu = AvailablePorts(connectedPorts, "&DruckBox2", parent)
+        druckBox2Menu.actionTriggeredSignal.connect(self.addDruckBox2)
+        self.addMenu(druckBox2Menu)
 
         motorDriverMenu = AvailablePorts(connectedPorts, "&MotorDriverPanel", parent)
         motorDriverMenu.actionTriggeredSignal.connect(self.addMotorDriverPanel)
@@ -55,6 +60,9 @@ class ToolsMenu(QMenu):
 
     def addPressureControlPanel(self, portName):
         self.addPressureControlPanelSignal.emit(portName)
+        
+    def addDruckBox2(self, portName):
+        self.addDruckBox2Signal.emit(portName)
 
     def addMotorDriverPanel(self, portName):
         self.addMotorDriverPanelSignal.emit(portName)
