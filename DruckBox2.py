@@ -93,6 +93,7 @@ class DruckBox2(Tab):
         self.varPSET = 300
         self.varPIN = 0
         self.varPOUT = 0
+        self.varPMEASURE = 0
         self.varConP = 0
         self.varLSO = 10
         self.varMST = "FORCED BLOW OFF"
@@ -146,10 +147,28 @@ class DruckBox2(Tab):
         optionsLayout.addStretch()
         optionsLayout.addWidget(self.motorOptionsButton)
 
+        opacityEffectTitle1 = QGraphicsOpacityEffect()
+        opacityEffectTitle1.setOpacity(0.3)
+        opacityEffectTitle2 = QGraphicsOpacityEffect()
+        opacityEffectTitle2.setOpacity(0.3)
+        opacityEffectTitle3 = QGraphicsOpacityEffect()
+        opacityEffectTitle3.setOpacity(0.3)
+        lcd1TitelLabel = QLabel("7 bar Input")
+        lcd1TitelLabel.setAlignment(Qt.AlignHCenter)
+        lcd1TitelLabel.setGraphicsEffect(opacityEffectTitle1)
+        lcd2TitelLabel = QLabel("Stelldruck")
+        lcd2TitelLabel.setAlignment(Qt.AlignHCenter)
+        lcd2TitelLabel.setGraphicsEffect(opacityEffectTitle2)
+        lcd3TitelLabel = QLabel("Messstelle")
+        lcd3TitelLabel.setAlignment(Qt.AlignHCenter)
+        lcd3TitelLabel.setGraphicsEffect(opacityEffectTitle3)
+
         opacityEffect1 = QGraphicsOpacityEffect()
         opacityEffect1.setOpacity(0.3)
         opacityEffect2 = QGraphicsOpacityEffect()
         opacityEffect2.setOpacity(0.3)
+        opacityEffect3 = QGraphicsOpacityEffect()
+        opacityEffect3.setOpacity(0.3)
         opacityEffect4 = QGraphicsOpacityEffect()
         opacityEffect4.setOpacity(0.3)
 
@@ -162,6 +181,9 @@ class DruckBox2(Tab):
         lcd2UnitLabel = QLabel("bar")
         lcd2UnitLabel.setAlignment(Qt.AlignHCenter)
         lcd2UnitLabel.setGraphicsEffect(opacityEffect2)
+        lcd3UnitLabel = QLabel("bar")
+        lcd3UnitLabel.setAlignment(Qt.AlignHCenter)
+        lcd3UnitLabel.setGraphicsEffect(opacityEffect3)
 
         self.pressureLCD1 = QLCDNumber()
         self.pressureLCD1.display("-----")
@@ -186,6 +208,18 @@ class DruckBox2(Tab):
         pressureLCD2Layout = QVBoxLayout()
         pressureLCD2Layout.addWidget(self.pressureLCD2)
         pressureLCD2Layout.addWidget(lcd2UnitLabel)
+
+        self.pressureLCD3 = QLCDNumber()
+        self.pressureLCD3.display("-----")
+        self.pressureLCD3.setDigitCount(5)
+        self.pressureLCD3.setFixedWidth(50)
+        self.pressureLCD3.setFixedHeight(25)
+        self.pressureLCD3.setSegmentStyle(QLCDNumber.Flat)
+        self.pressureLCD3.setFrameShape(QFrame.NoFrame)
+
+        pressureLCD3Layout = QVBoxLayout()
+        pressureLCD3Layout.addWidget(self.pressureLCD3)
+        pressureLCD3Layout.addWidget(lcd3UnitLabel)
 
         self.pressureSetSpinBox = QDoubleSpinBox()
         self.pressureSetSpinBox.setRange(0, 10)
@@ -222,6 +256,10 @@ class DruckBox2(Tab):
         svgDruckLeitung4.setFixedHeight(round(563.21765 / 3))
         svgDruckVentil = QtSvg.QSvgWidget(resource_path('res/Symbole/Druckventil.svg'))
         svgDruckVentil.setFixedSize(round(343.86719 / 3), round(563.21765 / 3))
+        svgDruckLeitung6 = QtSvg.QSvgWidget(resource_path('res/Symbole/Druckleitung.svg'))
+        svgDruckLeitung6.setFixedHeight(round(563.21765 / 3))
+        svgBarometer3 = QtSvg.QSvgWidget(resource_path('res/Symbole/Barometer.svg'))
+        svgBarometer3.setFixedSize(round(158.60344 / 3), round(563.216 / 3))
         svgDruckLeitung5 = QtSvg.QSvgWidget(resource_path('res/Symbole/Druckleitung.svg'))
         svgDruckLeitung5.setFixedHeight(round(563.21765 / 3))
 
@@ -269,22 +307,28 @@ class DruckBox2(Tab):
         pressureDisplayLayout = QGridLayout()
         pressureDisplayLayout.setSpacing(0)
         pressureDisplayLayout.setContentsMargins(0, 20, 0, 0)
-        pressureDisplayLayout.addWidget(svgDruckLeitung1, 1, 0)
-        pressureDisplayLayout.addLayout(pressureLCD1Layout, 0, 1, 1, 1)
-        pressureDisplayLayout.addWidget(svgBarometer1, 1, 1)
-        pressureDisplayLayout.addWidget(svgDruckLeitung2, 1, 2)
-        pressureDisplayLayout.addWidget(self.druckRegelVentilLabel, 1, 2)
-        pressureDisplayLayout.addLayout(pressureSetLayout, 0, 3, 1, 1)
-        pressureDisplayLayout.addWidget(svgDruckregelVentil, 1, 3)
-        pressureDisplayLayout.addLayout(messageTransferLayout, 2, 3, 1, 6)
-        pressureDisplayLayout.addWidget(svgDruckLeitung3, 1, 4)
-        pressureDisplayLayout.addLayout(directMotorControlLayout, 2, 4, 1, 4)
-        pressureDisplayLayout.addLayout(pressureLCD2Layout, 0, 5, 1, 1)
-        pressureDisplayLayout.addWidget(svgBarometer2, 1, 5)
-        pressureDisplayLayout.addWidget(svgDruckLeitung4, 1, 6)
-        pressureDisplayLayout.addWidget(svgDruckVentil, 1, 7)
-        pressureDisplayLayout.addWidget(self.druckVentilLabel, 1, 7)
-        pressureDisplayLayout.addWidget(svgDruckLeitung5, 1, 8)
+        pressureDisplayLayout.addWidget(svgDruckLeitung1, 2, 0)
+        pressureDisplayLayout.addWidget(lcd1TitelLabel, 0, 1)
+        pressureDisplayLayout.addLayout(pressureLCD1Layout, 1, 1, 1, 1)
+        pressureDisplayLayout.addWidget(svgBarometer1, 2, 1)
+        pressureDisplayLayout.addWidget(svgDruckLeitung2, 2, 2)
+        #pressureDisplayLayout.addWidget(self.druckRegelVentilLabel, 2, 2)
+        pressureDisplayLayout.addLayout(pressureSetLayout, 1, 3, 1, 1)
+        pressureDisplayLayout.addWidget(svgDruckregelVentil, 2, 3)
+        pressureDisplayLayout.addLayout(messageTransferLayout, 3, 3, 1, 6)
+        pressureDisplayLayout.addWidget(svgDruckLeitung3, 2, 4)
+        pressureDisplayLayout.addLayout(directMotorControlLayout, 3, 4, 1, 4)
+        pressureDisplayLayout.addWidget(lcd2TitelLabel, 0, 5)
+        pressureDisplayLayout.addLayout(pressureLCD2Layout, 1, 5, 1, 1)
+        pressureDisplayLayout.addWidget(svgBarometer2, 2, 5)
+        pressureDisplayLayout.addWidget(svgDruckLeitung4, 2, 6)
+        pressureDisplayLayout.addWidget(svgDruckVentil, 2, 7)
+        pressureDisplayLayout.addWidget(self.druckVentilLabel, 2, 7)
+        pressureDisplayLayout.addWidget(svgDruckLeitung6, 2, 8)
+        pressureDisplayLayout.addWidget(lcd3TitelLabel, 0, 9)
+        pressureDisplayLayout.addLayout(pressureLCD3Layout, 1, 9, 1, 1)
+        pressureDisplayLayout.addWidget(svgBarometer3, 2, 9)
+        pressureDisplayLayout.addWidget(svgDruckLeitung5, 2, 10)
 
         self.scheduleButton = QPushButton("  Create schedule  ")
         self.scheduleButton.clicked.connect(self.openPressureScheduleWindow)
@@ -365,7 +409,7 @@ class DruckBox2(Tab):
 
         self.initUI()
         
-        self.mainframe.hide()
+        # self.mainframe.hide()
         # @TODO Ein Auswahlfenster erstellen wo man angeben kann auf welcher Seite die Messstelle des Druckminderer steht. Vor oder nach dem Volumenstrombooster?
 
     def initUI(self):
@@ -428,7 +472,7 @@ class DruckBox2(Tab):
                 decodedFunction = self.cutNextParameter(decodedFunction)
                 if param == "NONE":
                     continue
-                elif param == "PVBIN":
+                elif param == "PIN":
                     param = self.getNextParameter(decodedFunction)
                     decodedFunction = self.cutNextParameter(decodedFunction)
                     if param == "NONE":
@@ -436,7 +480,7 @@ class DruckBox2(Tab):
                     elif isFloat(param):
                         self.varPIN = returnFloat(param)
                         self.pressureLCD1.display(returnFloat(param) / 100000)
-                elif param == "PVBOUT":
+                elif param == "PVBIN":
                     param = self.getNextParameter(decodedFunction)
                     decodedFunction = self.cutNextParameter(decodedFunction)
                     if param == "NONE":
@@ -444,6 +488,14 @@ class DruckBox2(Tab):
                     elif isFloat(param):
                         self.varPOUT = returnFloat(param)
                         self.pressureLCD2.display(returnFloat(param) / 100000)
+                elif param == "PVBOUT":
+                    param = self.getNextParameter(decodedFunction)
+                    decodedFunction = self.cutNextParameter(decodedFunction)
+                    if param == "NONE":
+                        continue
+                    elif isFloat(param):
+                        self.varPMEASURE = returnFloat(param)
+                        self.pressureLCD3.display(returnFloat(param) / 100000)
                 elif param == "PIN":
                     param = self.getNextParameter(decodedFunction)
                     decodedFunction = self.cutNextParameter(decodedFunction)
