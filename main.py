@@ -10,6 +10,7 @@ from UsefulFunctions import *
 from Terminal import Terminal
 from Graph import Graph
 from PressureControlPanel import PressureControlPanel
+from DruckBox2 import DruckBox2
 from MotorDriverPanel import MotorDriverPanel
 from TablePlotter import TablePlotter
 from VarCalculator import VarCalculator
@@ -87,6 +88,7 @@ class MainWindow(QMainWindow):
         toolsMenu.addTerminalSignal.connect(self.addTerminal)
         toolsMenu.addGraphSignal.connect(self.addGraph)
         toolsMenu.addPressureControlPanelSignal.connect(self.addPressureControlPanel)
+        toolsMenu.addDruckBox2Signal.connect(self.addDruckBox2)
         toolsMenu.addMotorDriverPanelSignal.connect(self.addMotorDriverPanel)
         toolsMenu.addTablePlotterSignal.connect(self.addTablePlotter)
         toolsMenu.addVarCalculatorSignal.connect(self.addVarCalculator)
@@ -104,7 +106,7 @@ class MainWindow(QMainWindow):
         self.mainLayout.addWidget(self.mainMiddleWidget)
         self.mainWidget.setLayout(self.mainLayout)
         self.setCentralWidget(self.mainWidget)
-
+        
         self.statusBar()
 
         self.initSignalsAndSlots()
@@ -257,6 +259,8 @@ class MainWindow(QMainWindow):
                         self.addGraph(tab["port"], tab["layoutPosIndex"], tab["uuid"])
                     elif tab["tabType"] == "PressureControlPanel":
                         self.addPressureControlPanel(tab["port"], tab["layoutPosIndex"], tab["uuid"])
+                    elif tab["tabType"] == "DruckBox2":
+                        self.addDruckBox2(tab["port"], tab["layoutPosIndex"], tab["uuid"])
                     elif tab["tabType"] == "MotorDriverPanel":
                         self.addMotorDriverPanel(tab["port"], tab["layoutPosIndex"], tab["uuid"])
                     elif tab["tabType"] == "TablePlotter":
@@ -319,6 +323,13 @@ class MainWindow(QMainWindow):
         pressurePanel.sendSerialWriteSignal.connect(self.serialWriteData)
         pressurePanel.renameTabSignal.connect(self.changeTabNames)
         LayoutHandler.addNewTab(self.tabWidgets, pressurePanel, layoutPosIndex)
+        
+    def addDruckBox2(self, portName, layoutPosIndex: int = 0, UUID=None):
+        druckBox2 = DruckBox2("DruckBox2: " + portName, self.connectedPorts, portName, UUID)
+        self.receiveSerialDataSignal.connect(druckBox2.receiveData)
+        druckBox2.sendSerialWriteSignal.connect(self.serialWriteData)
+        druckBox2.renameTabSignal.connect(self.changeTabNames)
+        LayoutHandler.addNewTab(self.tabWidgets, druckBox2, layoutPosIndex)
 
     def addMotorDriverPanel(self, portName, layoutPosIndex: int = 0, UUID=None):
         motorDriverPanel = MotorDriverPanel("Motor driver panel: " + portName, self.connectedPorts, portName, UUID)
