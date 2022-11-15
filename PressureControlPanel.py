@@ -472,13 +472,27 @@ class PressureControlPanel(Tab):
                 decodedFunction = self.cutNextParameter(decodedFunction)
                 if param == "NONE":
                     continue
+                elif param == "PRESSURE_DROP_ERROR":
+                    self.failedSendingLabel.setStyleSheet("color: red")
+                    self.failedSendingLabel.setText("Pressure drop error! Pressure gradient to big.")
+                    if not self.clearFailedSendingLabelTimer.isActive():
+                        self.clearFailedSendingLabelTimer.start(200)
+                    else:
+                        self.clearFailedSendingLabelTimer.start(200)
+                elif param == "ABS_POS_ERROR":
+                    self.failedSendingLabel.setStyleSheet("color: red")
+                    self.failedSendingLabel.setText("Absolute position error! Absolute position out of bounce.")
+                    if not self.clearFailedSendingLabelTimer.isActive():
+                        self.clearFailedSendingLabelTimer.start(200)
+                    else:
+                        self.clearFailedSendingLabelTimer.start(200)
                 else:
                     self.failedSendingLabel.setStyleSheet("color: red")
                     self.failedSendingLabel.setText("No input pressure for control box!")
                     if not self.clearFailedSendingLabelTimer.isActive():
-                        self.clearFailedSendingLabelTimer.start(100)
+                        self.clearFailedSendingLabelTimer.start(200)
                     else:
-                        self.clearFailedSendingLabelTimer.start(100)
+                        self.clearFailedSendingLabelTimer.start(200)
             elif param == "r":
                 param = self.getNextParameter(decodedFunction)
                 decodedFunction = self.cutNextParameter(decodedFunction)
