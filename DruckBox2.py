@@ -79,7 +79,6 @@ class DruckBox2(Tab):
         self.transmissionState = "NoTransmission"
         self.motorOptionTransmissionState = ""
         self.motorOptionTransmissionTimer = QTimer()
-        self.motorOptionTransmissionTimer.timeout.connect(self.transmitMotorOptions)
         self.transmissionStateCounter = 0
 
         self.sendPressureUpMessageTimer = QTimer()
@@ -138,6 +137,9 @@ class DruckBox2(Tab):
         self.baudrateCombobox.addItem("2000000 Baud")
         self.baudrateCombobox.setCurrentText("ALL Baud")
 
+        self.motorStateLabel = QLabel("Not Connected")
+        self.motorStateLabel.setStyleSheet("color: red")
+
         self.motorOptionsButton = QPushButton("Motor options")
         self.motorOptionsButton.clicked.connect(self.openMotorOptionsWindow)
 
@@ -145,6 +147,7 @@ class DruckBox2(Tab):
         optionsLayout.addWidget(self.portCombobox)
         optionsLayout.addWidget(self.baudrateCombobox)
         optionsLayout.addStretch()
+        optionsLayout.addWidget(self.motorStateLabel)
         optionsLayout.addWidget(self.motorOptionsButton)
 
         opacityEffectTitle1 = QGraphicsOpacityEffect()
@@ -472,6 +475,28 @@ class DruckBox2(Tab):
                 decodedFunction = self.cutNextParameter(decodedFunction)
                 if param == "NONE":
                     continue
+                elif param == "MOTS":
+                    param = self.getNextParameter(decodedFunction)
+                    decodedFunction = self.cutNextParameter(decodedFunction)
+                    if param == "NONE":
+                        continue
+                    else:
+                        if param == "SLEEP":
+                            self.motorStateLabel.setText("SLEEP")
+                            self.motorStateLabel.setStyleSheet("color: yellow")
+                        if param == "FINE ADJUST":
+                            self.motorStateLabel.setText("FINE ADJUST")
+                            self.motorStateLabel.setStyleSheet("color: green")
+                        if param == "TURN PRESSURE DOWN":
+                            self.motorStateLabel.setText("TURN PRESSURE DOWN")
+                            self.motorStateLabel.setStyleSheet("color: red")
+                        if param == "TURN PRESSURE UP":
+                            self.motorStateLabel.setText("TURN PRESSURE UP")
+                            self.motorStateLabel.setStyleSheet("color: red")
+                        if param == "NEW SETPOINT":
+                            self.motorStateLabel.setText("NEW SETPOINT")
+                            self.motorStateLabel.setStyleSheet("color: green")
+
                 elif param == "PIN":
                     param = self.getNextParameter(decodedFunction)
                     decodedFunction = self.cutNextParameter(decodedFunction)
@@ -535,13 +560,27 @@ class DruckBox2(Tab):
                 decodedFunction = self.cutNextParameter(decodedFunction)
                 if param == "NONE":
                     continue
+                elif param == "PRESSURE_DROP_ERROR":
+                    self.failedSendingLabel.setStyleSheet("color: red")
+                    self.failedSendingLabel.setText("Pressure drop error! Pressure gradient to big.")
+                    if not self.clearFailedSendingLabelTimer.isActive():
+                        self.clearFailedSendingLabelTimer.start(500)
+                    else:
+                        self.clearFailedSendingLabelTimer.start(500)
+                elif param == "ABS_POS_ERROR":
+                    self.failedSendingLabel.setStyleSheet("color: red")
+                    self.failedSendingLabel.setText("Absolute position error! Absolute position out of bounce.")
+                    if not self.clearFailedSendingLabelTimer.isActive():
+                        self.clearFailedSendingLabelTimer.start(500)
+                    else:
+                        self.clearFailedSendingLabelTimer.start(500)
                 else:
                     self.failedSendingLabel.setStyleSheet("color: red")
                     self.failedSendingLabel.setText("No input pressure for control box!")
                     if not self.clearFailedSendingLabelTimer.isActive():
-                        self.clearFailedSendingLabelTimer.start(100)
+                        self.clearFailedSendingLabelTimer.start(500)
                     else:
-                        self.clearFailedSendingLabelTimer.start(100)
+                        self.clearFailedSendingLabelTimer.start(500)
             elif param == "r":
                 param = self.getNextParameter(decodedFunction)
                 decodedFunction = self.cutNextParameter(decodedFunction)
@@ -572,25 +611,30 @@ class DruckBox2(Tab):
             self.stopResendMessageTimer()
 
     def getMotorOptionsParameters(self):
-        self.varMST = self.motorOptionsWindow.controlStateCB.currentText()
-        self.varMSI = self.motorOptionsWindow.motorAccelerationSpinBox.value()
-        self.varMSF = self.motorOptionsWindow.motorSpeedFastSpinBox.value()
-        self.varMSM = self.motorOptionsWindow.motorSpeedMediumSpinBox.value()
-        self.varMSS = self.motorOptionsWindow.motorSpeedSlowSpinBox.value()
-        self.varMDM = self.motorOptionsWindow.motorDistMediumSpinBox.value()
-        self.varMDC = self.motorOptionsWindow.motorDistCloseSpinBox.value()
-        self.varMDOP = self.motorOptionsWindow.motorDistOnPointSpinBox.value()
-        self.varMIIP = self.motorOptionsWindow.minPressureSpinBox.value()
-        self.varMAIP = self.motorOptionsWindow.maxPressuerSpinBox.value()
-        self.varMTI = self.motorOptionsWindow.motorControlRefreshSpinBox.value()
+        #self.varMST = self.motorOptionsWindow.controlStateCB.currentText()
+        #self.varMSI = self.motorOptionsWindow.motorAccelerationSpinBox.value()
+        #self.varMSF = self.motorOptionsWindow.motorSpeedFastSpinBox.value()
+        #self.varMSM = self.motorOptionsWindow.motorSpeedMediumSpinBox.value()
+        #self.varMSS = self.motorOptionsWindow.motorSpeedSlowSpinBox.value()
+        #self.varMDM = self.motorOptionsWindow.motorDistMediumSpinBox.value()
+        #self.varMDC = self.motorOptionsWindow.motorDistCloseSpinBox.value()
+        #self.varMDOP = self.motorOptionsWindow.motorDistOnPointSpinBox.value()
+        #self.varMIIP = self.motorOptionsWindow.minPressureSpinBox.value()
+        #self.varMAIP = self.motorOptionsWindow.maxPressuerSpinBox.value()
+        #self.varMTI = self.motorOptionsWindow.motorControlRefreshSpinBox.value()
 
-        self.transmitAllMotorOptionsAtOnce()
+        message = "s|"
+        message += self.motorOptionsWindow.motorOptionCombobox.currentText() + "|"
+        message += str(self.motorOptionsWindow.motorOptionSpinBox.value()) + "|"
+        self.sendData(self.encodeFunction(message))
+
+        #self.transmitAllMotorOptionsAtOnce()
         #self.transmissionStateCounter = 0
         #self.transmitMotorOptions()
         #self.motorOptionTransmissionTimer.start(50)
 
     def getMotorParametersAndClose(self):
-        self.getMotorOptionsParameters()
+        #self.getMotorOptionsParameters()
         self.motorOptionsWindow.close()
 
     def getPressureScheduleParameters(self):
@@ -613,20 +657,9 @@ class DruckBox2(Tab):
         self.pressureScheduleWindow.close()
 
     def openMotorOptionsWindow(self):
-        self.motorOptionsWindow = MotorOptionsWindow()
-        self.motorOptionsWindow.controlStateCB.setCurrentText(self.varMST)
-        self.motorOptionsWindow.motorAccelerationSpinBox.setValue(self.varMSI)
-        self.motorOptionsWindow.motorSpeedFastSpinBox.setValue(self.varMSF)
-        self.motorOptionsWindow.motorSpeedMediumSpinBox.setValue(self.varMSM)
-        self.motorOptionsWindow.motorSpeedSlowSpinBox.setValue(self.varMSS)
-        self.motorOptionsWindow.motorDistMediumSpinBox.setValue(self.varMDM)
-        self.motorOptionsWindow.motorDistCloseSpinBox.setValue(self.varMDC)
-        self.motorOptionsWindow.motorDistOnPointSpinBox.setValue(self.varMDOP)
-        self.motorOptionsWindow.minPressureSpinBox.setValue(self.varMIIP)
-        self.motorOptionsWindow.maxPressuerSpinBox.setValue(self.varMAIP)
-        self.motorOptionsWindow.motorControlRefreshSpinBox.setValue(self.varMTI)
-        self.motorOptionsWindow.okButton.clicked.connect(self.getMotorParametersAndClose)
+        self.motorOptionsWindow = MotorOptionsWindow2()
         self.motorOptionsWindow.applyButton.clicked.connect(self.getMotorOptionsParameters)
+        self.motorOptionsWindow.okButton.clicked.connect(self.getMotorParametersAndClose)
         self.motorOptionsWindow.show()
 
     def openPressureScheduleWindow(self):
@@ -1011,131 +1044,14 @@ class DruckBox2(Tab):
         self.sendPressureDownMessageTimer.stop()
 
     def transmitAllMotorOptionsAtOnce(self):
-        message = (self.encodeFunction("s|MST|" + self.varMST) +
-                   self.encodeFunction("s|MSI|" + str(round(self.varMSI))) +
-                   self.encodeFunction("s|MSF|" + str(round(self.varMSF))) +
+        message = (self.encodeFunction("s|MSF|" + str(round(self.varMSF))) +
                    self.encodeFunction("s|MSM|" + str(round(self.varMSM))) +
                    self.encodeFunction("s|MSS|" + str(round(self.varMSS))) +
                    self.encodeFunction("s|MDM|" + str(round(self.varMDM))) +
                    self.encodeFunction("s|MDC|" + str(round(self.varMDC))) +
                    self.encodeFunction("s|MDOP|" + str(round(self.varMDOP))) +
-                   self.encodeFunction("s|MIIP|" + str(round(self.varMIIP))) +
-                   self.encodeFunction("s|MAIP|" + str(round(self.varMAIP))) +
                    self.encodeFunction("s|MTI|" + str(round(self.varMTI))))
         self.sendData(message)
-
-    def transmitMotorOptions(self):
-        self.transmissionStateCounter += 1
-        if self.transmissionStateCounter > 100:
-            self.failedSendingLabel.setStyleSheet("color: red")
-            self.failedSendingLabel.setText("Failed catastrophically to send option messages!")
-            self.transmissionState = "NoTransmission"
-            self.motorOptionTransmissionState = ""
-            self.motorOptionTransmissionTimer.stop()
-            return
-        if self.motorOptionTransmissionState == "":
-            self.transmissionState = "NoTransmission"
-            self.motorOptionTransmissionState = "MST"
-        if self.motorOptionTransmissionState == "MST":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MST|" + self.varMST
-                self.waitForVarMessage = "MST"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MSI"
-        if self.motorOptionTransmissionState == "MSI":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MSI|" + str(round(self.varMSI))
-                self.waitForVarMessage = "MSI"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MSF"
-        if self.motorOptionTransmissionState == "MSF":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MSF|" + str(round(self.varMSF))
-                self.waitForVarMessage = "MSF"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MSM"
-        if self.motorOptionTransmissionState == "MSM":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MSM|" + str(round(self.varMSM))
-                self.waitForVarMessage = "MSM"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MSS"
-        if self.motorOptionTransmissionState == "MSS":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MSS|" + str(round(self.varMSS))
-                self.waitForVarMessage = "MSS"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MDM"
-        if self.motorOptionTransmissionState == "MDM":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MDM|" + str(round(self.varMDM))
-                self.waitForVarMessage = "MDM"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MDC"
-        if self.motorOptionTransmissionState == "MDC":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MDC|" + str(round(self.varMDC))
-                self.waitForVarMessage = "MDC"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MDOP"
-        if self.motorOptionTransmissionState == "MDOP":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MDOP|" + str(round(self.varMDOP))
-                self.waitForVarMessage = "MDOP"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MIIP"
-        if self.motorOptionTransmissionState == "MIIP":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MIIP|" + str(round(self.varMIIP))
-                self.waitForVarMessage = "MIIP"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MAIP"
-        if self.motorOptionTransmissionState == "MAIP":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MAIP|" + str(round(self.varMAIP))
-                self.waitForVarMessage = "MAIP"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = "MTI"
-        if self.motorOptionTransmissionState == "MTI":
-            if self.transmissionState == "NoTransmission":
-                self.transmissionState = "Transmit"
-                self.message = "s|MTI|" + str(round(self.varMTI))
-                self.waitForVarMessage = "MTI"
-                self.sendMessage()
-            elif self.transmissionState == "Done":
-                self.transmissionState = "NoTransmission"
-                self.motorOptionTransmissionState = ""
-                self.motorOptionTransmissionTimer.stop()
 
     def applySettings(self, settings: QSettings = None):
         if settings.contains(self.uuid):
@@ -1151,3 +1067,61 @@ class DruckBox2(Tab):
         tempSettings = {"port": self.portCombobox.currentText(),
                         "baud": self.baudrateCombobox.currentText()}
         settings.setValue(self.uuid, tempSettings)
+
+from PyQt5.QtWidgets import *
+from PyQt5.QtCore import *
+
+
+class MotorOptionsWindow2(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Motor options")
+
+        # __________ Motor Options Widgets __________
+        self.motorOptionCombobox = QComboBox()
+        self.motorOptionCombobox.addItem("RM")
+        self.motorOptionCombobox.addItem("ATI")
+        self.motorOptionCombobox.addItem("AHM")
+        self.motorOptionCombobox.addItem("AHA")
+        self.motorOptionCombobox.addItem("FMR")
+        self.motorOptionCombobox.addItem("FMD")
+        self.motorOptionCombobox.addItem("MSF")
+        self.motorOptionCombobox.addItem("MSM")
+        self.motorOptionCombobox.addItem("MSS")
+        self.motorOptionCombobox.addItem("MDM")
+        self.motorOptionCombobox.addItem("MDC")
+        self.motorOptionCombobox.addItem("MDOP")
+        self.motorOptionCombobox.addItem("MTI")
+        self.motorOptionCombobox.setCurrentText("RM")
+
+        self.motorOptionSpinBox = QSpinBox()
+        self.motorOptionSpinBox.setRange(0, 1000000)
+
+        motorOptionsLayout = QHBoxLayout()
+        motorOptionsLayout.addWidget(self.motorOptionCombobox)
+        motorOptionsLayout.addWidget(self.motorOptionSpinBox)
+
+        # __________ Submit Button Layout __________
+        self.cancelButton = QPushButton("Cancel")
+        self.applyButton = QPushButton("Apply")
+        self.okButton = QPushButton("OK")
+        self.okButton.setAutoDefault(True)
+        QTimer.singleShot(0, self.okButton.setFocus)
+
+        submitButtonLayout = QHBoxLayout()
+        submitButtonLayout.setContentsMargins(0, 30, 0, 0)
+        submitButtonLayout.addWidget(self.okButton)
+        submitButtonLayout.addWidget(self.applyButton)
+        submitButtonLayout.addWidget(self.cancelButton)
+
+
+        # __________ Main Grid Layout __________
+        gridLayout = QGridLayout()
+        gridLayout.addLayout(motorOptionsLayout, 0, 0)
+        gridLayout.addLayout(submitButtonLayout, 1, 0)
+
+        self.setLayout(gridLayout)
+
+        # __________ QPushButton Function __________
+        self.cancelButton.clicked.connect(self.close)
