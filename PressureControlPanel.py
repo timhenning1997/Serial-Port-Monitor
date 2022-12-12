@@ -137,6 +137,9 @@ class PressureControlPanel(Tab):
         self.baudrateCombobox.addItem("2000000 Baud")
         self.baudrateCombobox.setCurrentText("ALL Baud")
 
+        self.motorStateLabel = QLabel("Not Connected")
+        self.motorStateLabel.setStyleSheet("color: red")
+
         self.motorOptionsButton = QPushButton("Motor options")
         self.motorOptionsButton.clicked.connect(self.openMotorOptionsWindow)
 
@@ -144,6 +147,7 @@ class PressureControlPanel(Tab):
         optionsLayout.addWidget(self.portCombobox)
         optionsLayout.addWidget(self.baudrateCombobox)
         optionsLayout.addStretch()
+        optionsLayout.addWidget(self.motorStateLabel)
         optionsLayout.addWidget(self.motorOptionsButton)
 
         opacityEffect1 = QGraphicsOpacityEffect()
@@ -417,6 +421,27 @@ class PressureControlPanel(Tab):
                 decodedFunction = self.cutNextParameter(decodedFunction)
                 if param == "NONE":
                     continue
+                elif param == "MOTS":
+                    param = self.getNextParameter(decodedFunction)
+                    decodedFunction = self.cutNextParameter(decodedFunction)
+                    if param == "NONE":
+                        continue
+                    else:
+                        if param == "SLEEP":
+                            self.motorStateLabel.setText("SLEEP")
+                            self.motorStateLabel.setStyleSheet("color: yellow")
+                        if param == "FINE ADJUST":
+                            self.motorStateLabel.setText("FINE ADJUST")
+                            self.motorStateLabel.setStyleSheet("color: green")
+                        if param == "TURN PRESSURE DOWN":
+                            self.motorStateLabel.setText("TURN PRESSURE DOWN")
+                            self.motorStateLabel.setStyleSheet("color: red")
+                        if param == "TURN PRESSURE UP":
+                            self.motorStateLabel.setText("TURN PRESSURE UP")
+                            self.motorStateLabel.setStyleSheet("color: red")
+                        if param == "NEW SETPOINT":
+                            self.motorStateLabel.setText("NEW SETPOINT")
+                            self.motorStateLabel.setStyleSheet("color: green")
                 elif param == "PVBIN":
                     param = self.getNextParameter(decodedFunction)
                     decodedFunction = self.cutNextParameter(decodedFunction)
