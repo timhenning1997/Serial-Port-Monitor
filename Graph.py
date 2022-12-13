@@ -113,6 +113,7 @@ class Graph(Tab):
         self.connectedPorts = connectedPorts
         self.port = port
         self.dataFindMethod = "Automatic"
+        self.useDruckbox2Bool = False
 
         self.graphLines: list[GraphLine] = []
         self.title = None
@@ -184,6 +185,9 @@ class Graph(Tab):
         self.mouseInteractionCB = QCheckBox("Mouse interaction")
         self.mouseInteractionCB.toggled.connect(self.mouseInteraction)
 
+        self.UseDruckBox2CB = QCheckBox("Use Druckbox2")
+        self.UseDruckBox2CB.toggled.connect(self.useDruckbox2Interaction)
+
         self.clearDisplayButton = QPushButton("Clear display")
         self.clearDisplayButton.clicked.connect(self.clearDisplayData)
 
@@ -196,6 +200,7 @@ class Graph(Tab):
         optionsLayout.addStretch()
         optionsLayout.addWidget(self.optionsButton)
         optionsLayout.addWidget(self.mouseInteractionCB)
+        optionsLayout.addWidget(self.UseDruckBox2CB)
         optionsLayout.addStretch()
         optionsLayout.addWidget(self.clearDisplayButton)
         optionsLayout.addWidget(self.deleteLinesButton)
@@ -433,6 +438,9 @@ class Graph(Tab):
             self.graphWidget.plotItem.showButtons()
         else:
             self.graphWidget.plotItem.hideButtons()
+
+    def useDruckbox2Interaction(self, state: bool):
+        self.useDruckbox2Bool = state
 
     def showLegend(self, showBool: bool):
         self.showLegendBool = showBool
@@ -813,8 +821,9 @@ class Graph(Tab):
                             break
                         numberName = splittedData[a]
                         break
-                    numberValues.append(returnFloat(splittedData[numberIndex]))
-                    numberNames.append(numberName)
+                    if not self.useDruckbox2Bool or numberName in ["PIN", "PVBIN", "PVBOUT", "PSET"]:
+                        numberValues.append(returnFloat(splittedData[numberIndex]))
+                        numberNames.append(numberName)
 
         for count in range(0, len(numberValues)):
             if numberNames[count].strip() != "":

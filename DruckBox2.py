@@ -481,19 +481,19 @@ class DruckBox2(Tab):
                     if param == "NONE":
                         continue
                     else:
-                        if param == "SLEEP":
+                        if param == "SL":
                             self.motorStateLabel.setText("SLEEP")
                             self.motorStateLabel.setStyleSheet("color: yellow")
-                        if param == "FINE ADJUST":
+                        if param == "FA":
                             self.motorStateLabel.setText("FINE ADJUST")
                             self.motorStateLabel.setStyleSheet("color: green")
-                        if param == "TURN PRESSURE DOWN":
+                        if param == "TD":
                             self.motorStateLabel.setText("TURN PRESSURE DOWN")
                             self.motorStateLabel.setStyleSheet("color: red")
-                        if param == "TURN PRESSURE UP":
+                        if param == "TU":
                             self.motorStateLabel.setText("TURN PRESSURE UP")
                             self.motorStateLabel.setStyleSheet("color: red")
-                        if param == "NEW SETPOINT":
+                        if param == "NS":
                             self.motorStateLabel.setText("NEW SETPOINT")
                             self.motorStateLabel.setStyleSheet("color: green")
 
