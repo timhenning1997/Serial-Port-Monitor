@@ -93,6 +93,7 @@ class MainWindow(QMainWindow):
         toolsMenu.addTablePlotterSignal.connect(self.addTablePlotter)
         toolsMenu.addVarCalculatorSignal.connect(self.addVarCalculator)
         toolsMenu.addMeasurementSignal.connect(self.addMeasurement)
+        # @TODO toolsMenu.addNEWWINDOWSignal.connect(self.addNEWWINDOW)
         toolsMenu.disconnectAllAction.triggered.connect(lambda: self.killSerialConnection("ALL"))
         self.menuBar().addMenu(toolsMenu)
 
@@ -269,6 +270,8 @@ class MainWindow(QMainWindow):
                         self.addVarCalculator(tab["port"], tab["layoutPosIndex"], tab["uuid"])
                     elif tab["tabType"] == "Measurement":
                         self.addMeasurement(tab["port"], tab["layoutPosIndex"], tab["uuid"])
+                    # @TODO  elif tab["tabType"] == "NEWWINDOW":
+                    #           self.addNEWWINDOW(tab["port"], tab["layoutPosIndex"], tab["uuid"])
                 for tabWidget in self.tabWidgets:
                     for count in range(0, tabWidget.count()):
                         tabWidget.widget(count).applySettings(self.settings)
@@ -367,6 +370,18 @@ class MainWindow(QMainWindow):
         measurement.writeToFileSignal.connect(self.writeToFile)
         measurement.renameTabSignal.connect(self.changeTabNames)
         LayoutHandler.addNewTab(self.tabWidgets, measurement, layoutPosIndex)
+
+    # @TODO     def addNEWWINDOW(self, portName, layoutPosIndex: int = 0, UUID=None):
+    #               newwindow = NEWWINDOW("NewWindow: " + portName, self.connectedPorts, portName, UUID)
+    #               self.receiveSerialDataSignal.connect(newwindow.receiveData)
+    #               newwindow.sendSerialWriteSignal.connect(self.serialWriteData)
+    #               newwindow.startRecordSignal.connect(self.startSerialRecord)
+    #               newwindow.stopRecordSignal.connect(self.stopSerialRecord)
+    #               newwindow.pauseRecordSignal.connect(self.pauseSerialRecord)
+    #               newwindow.resumeRecordSignal.connect(self.resumeSerialRecord)
+    #               newwindow.writeToFileSignal.connect(self.writeToFile)
+    #               newwindow.renameTabSignal.connect(self.changeTabNames)
+    #               LayoutHandler.addNewTab(self.tabWidgets, measurement, layoutPosIndex)
 
 def main():
     app = QApplication(sys.argv)

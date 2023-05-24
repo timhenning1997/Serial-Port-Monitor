@@ -12,6 +12,7 @@ class ToolsMenu(QMenu):
     addTablePlotterSignal = pyqtSignal(str)
     addVarCalculatorSignal = pyqtSignal(str)
     addMeasurementSignal = pyqtSignal(str)
+    # @TODO addNEWWINDOWSignal = pyqtSignal(str)
 
     def __init__(self, connectedPorts: list, parent=None):
         super(ToolsMenu, self).__init__(parent)
@@ -49,6 +50,10 @@ class ToolsMenu(QMenu):
         measurementMenu.actionTriggeredSignal.connect(self.addMeasurement)
         self.addMenu(measurementMenu)
 
+        # @TODO newwindowMenu = AvailablePorts(connectedPorts, "&NEWWINDOW", parent)
+        #       newwindowMenu.actionTriggeredSignal.connect(self.addNEWWINDOW)
+        #       self.addMenu(newwindowMenu)
+
         self.disconnectAllAction = QAction("&Disconnect All", self)
         self.addAction(self.disconnectAllAction)
 
@@ -75,3 +80,6 @@ class ToolsMenu(QMenu):
 
     def addMeasurement(self, portName):
         self.addMeasurementSignal.emit(portName)
+
+    # @TODO def addNEWWINDOW(self, portName):
+    #       self.addNEWWINDOWSignal.emit(portName)
