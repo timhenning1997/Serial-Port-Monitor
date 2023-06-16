@@ -317,8 +317,8 @@ class MainWindow(QMainWindow):
         graph.renameTabSignal.connect(self.changeTabNames)
 
         # NEW LINE
-        # graph.show()
-        LayoutHandler.addNewTab(self.tabWidgets, graph, layoutPosIndex)
+        graph.show()
+        #LayoutHandler.addNewTab(self.tabWidgets, graph, layoutPosIndex)
 
     def addPressureControlPanel(self, portName, layoutPosIndex: int = 0, UUID=None):
         pressurePanel = PressureControlPanel("Pressure control panel: " + portName, self.connectedPorts, portName, UUID)
@@ -381,7 +381,7 @@ class MainWindow(QMainWindow):
     #               newwindow.resumeRecordSignal.connect(self.resumeSerialRecord)
     #               newwindow.writeToFileSignal.connect(self.writeToFile)
     #               newwindow.renameTabSignal.connect(self.changeTabNames)
-    #               LayoutHandler.addNewTab(self.tabWidgets, measurement, layoutPosIndex)
+    #               LayoutHandler.addNewTab(self.tabWidgets, measurement, layoutPosIndex)^^
 
 def main():
     app = QApplication(sys.argv)

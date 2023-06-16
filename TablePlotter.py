@@ -253,8 +253,7 @@ class TablePlotter(Tab):
                     elif self.shownType == "Hex":
                         self.table.setItem(countY, countX, QTableWidgetItem(self.receivedData[1:][tableContendIndex]))
                     elif self.shownType == "Values":
-                        self.table.setItem(countY, countX,
-                                           QTableWidgetItem(str(self.receivedValueData[1:][tableContendIndex])))
+                        self.table.setItem(countY, countX, QTableWidgetItem(str(self.receivedValueData[1:][tableContendIndex])))
                     else:
                         self.table.setItem(countY, countX, QTableWidgetItem(""))
 
