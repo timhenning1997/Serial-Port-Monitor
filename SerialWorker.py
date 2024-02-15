@@ -107,7 +107,7 @@ class SerialThread(QRunnable):
                                     return None
                                 self.signals.receivedData.emit(self.serialParameters, readLine)
                         elif self.serialParameters.readTextIndex == "logging_raw":
-                            with open('loggingRaw.txt', 'a') as file:
+                            with open('loggingRaw2.txt', 'a') as file:
                                 readChar = self.serialArduino.read(1)
                                 if readChar != b'':
                                     file.write(str(readChar))
